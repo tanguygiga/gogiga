@@ -1,2 +1,2 @@
 # gogiga
-repository for my golang learning
+repository for my golang projects
