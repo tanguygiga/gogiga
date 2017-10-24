@@ -2,16 +2,10 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"os"
+	"gogiga/stringutil"
 )
 
 func main() {
-	res, _ := http.Get("https://api.ipify.org")
-	ip, _ := ioutil.ReadAll(res.Body)
-	fmt.Printf("Je m'appelle Tanguy Giga et voici\nMon premier programme en go !\n")
-	fmt.Printf("Ceci est mon adresse ip publique :\n")
-	os.Stdout.Write(ip)
-	fmt.Printf("\n")
+	fmt.Println(`Je m'appelle Tanguy Giga et voici mon premier programme en go !`)
+	fmt.Printf(stringutil.Rtoucheverse("!oG ,olleH"))
 }
