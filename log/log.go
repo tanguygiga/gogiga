@@ -1,4 +1,4 @@
-package logger
+package log
 
 import (
 	"log"
@@ -10,7 +10,7 @@ var (
 	Error *log.Logger
 )
 
-func InitLog(infoHandle io.Writer, errorHandle io.Writer) {
+func Init(infoHandle io.Writer, errorHandle io.Writer) {
 	Info = log.New(infoHandle,
 		"INFO: ",
 		log.Ldate|log.Ltime)

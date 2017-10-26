@@ -1,0 +1,15 @@
+{
+  "cash": 381.70,
+  "line": [
+    {
+      "symbol": "ALP",
+      "market": "PA",
+      "quantity": 120
+    },
+    {
+      "symbol": "SOP",
+      "market": "PA",
+      "quantity": 0
+    }
+  ]
+}
