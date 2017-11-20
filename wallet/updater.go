@@ -1,14 +1,12 @@
 package main
 
 import (
+	"encoding/csv"
 	"gogiga/json"
 	"gogiga/log"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
-	"encoding/csv"
-	"strings"
-	"io"
 )
 
 type Account struct {
@@ -38,7 +36,7 @@ func main() {
 	for i := 0; i < len(a.Line); i++ {
 		l := a.Line[i]
 		if l.Quantity > 0 {
-			pricePerShare := 15.37
+			pricePerShare := 15.76
 			price := float64(a.Line[i].Quantity) * pricePerShare
 			logInfo("Ligne :", l.Symbol+"."+l.Market, "avec", l.Quantity, "titres :", price, "€")
 			total += price
@@ -47,11 +45,16 @@ func main() {
 	}
 	logInfo("Votre portefeuille vaut aujourd'hui :", total, "€")
 
-	base := "http://finance.yahoo.com/d/quotes.csv?"
+	//partie sur la récupération des infos de yahoo finance en csv
+	//construction de l'url, récupération du csv, puis lecture du csv
+	url := "http://finance.yahoo.com/d/quotes.csv?"
 	s := "s="
-	f := "f="
+	stocks := "ALP.PA+SOP.PA"
+	s += stocks
+	f := "&f="
 	param := "sd1l1"
-	url := base + s + "ALP.PA" + "&" + f + param
+	f += param
+	url += s + f
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -59,16 +62,9 @@ func main() {
 	}
 
 	logInfo(url)
-	logInfo(resp)
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	logInfo(body)
-	in := `first_name,last_name,username
-	Rob,Pike,rob
-	Ken,Thompson,ken
-	Robert,Griesemer,gri`
 
-	r := csv.NewReader(strings.NewReader(in))
+	defer resp.Body.Close()
+	r := csv.NewReader(resp.Body)
 
 	for {
 		record, err := r.Read()
