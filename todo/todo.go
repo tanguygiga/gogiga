@@ -65,13 +65,11 @@ func main() {
 			lines, err := stringutil.ReadLines(path)
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(1)
 			}
 			sort.Strings(lines)
 			err = stringutil.WriteLines(path, lines)
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(1)
 			}
 		}
 

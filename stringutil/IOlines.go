@@ -41,6 +41,9 @@ func WriteLines(file string, lines []string) (err error) {
     w := bufio.NewWriter(f)
     defer w.Flush()
     for _, line := range lines {
+      if "\n" == line {
+        continue
+      }
         _, err := w.WriteString(line)
         if err != nil {
             return err
