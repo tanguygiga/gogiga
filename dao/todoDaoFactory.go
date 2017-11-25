@@ -2,6 +2,7 @@ package dao
 
 import "fmt"
 
+// TodoDaoFactory return a Dao with the given implementation
 func TodoDaoFactory(impl string) TodoDao {
 	var dao TodoDao
 	switch impl {

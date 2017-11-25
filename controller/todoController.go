@@ -23,6 +23,7 @@ func (tc TodoController) GetAll() {
 	if err != nil {
 		return
 	}
+	fmt.Println("--- todo.txt ---")
 	for i := range listTodo {
 		fmt.Println(listTodo[i].ID, "\t", listTodo[i].Task)
 	}
@@ -34,5 +35,16 @@ func (tc TodoController) Get(id int) {
 	if err != nil {
 		return
 	}
+	fmt.Printf("--- Ligne %d ---\n", id)
 	fmt.Println(todo.ID, "\t", todo.Task)
+}
+
+// Delete a Todo and print the remaining list
+func (tc TodoController) Delete(id int) {
+	err := tc.dao.Delete(id)
+	if err != nil {
+		return
+	}
+	fmt.Printf("--- Suppression de la ligne %d ---\n", id)
+	tc.GetAll()
 }

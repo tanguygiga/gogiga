@@ -6,24 +6,24 @@ import (
 	m "gogiga/model"
 	"os"
 	"os/user"
+	"sort"
 )
 
 // TodoTxtImpl text implementation of Todo
 type TodoTxtImpl struct {
 }
 
-func (impl *TodoTxtImpl) getFile() (*os.File, error) {
+func (impl *TodoTxtImpl) getFilePath() string {
 	u, err := user.Current()
 	if err != nil {
 		fmt.Print(err)
 	}
-	f, err := os.Open(u.HomeDir + "/todo.txt")
-	return f, err
+	return u.HomeDir + "/todo-test.txt"
 }
 
 // GetAll return a list of Todo
 func (impl TodoTxtImpl) GetAll() (list []m.Todo, err error) {
-	f, err := impl.getFile()
+	f, err := os.Open(impl.getFilePath())
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (impl TodoTxtImpl) GetAll() (list []m.Todo, err error) {
 
 // Get return a Todo
 func (impl TodoTxtImpl) Get(id int) (t m.Todo, err error) {
-	f, err := impl.getFile()
+	f, err := os.Open(impl.getFilePath())
 	if err != nil {
 		return t, err
 	}
@@ -79,6 +79,47 @@ func (impl TodoTxtImpl) Update(t *m.Todo) error {
 
 // Delete a Todo
 func (impl TodoTxtImpl) Delete(id int) error {
-	fmt.Println("Delete(id int) : Not yet implemented !")
+	f, err := os.Open(impl.getFilePath())
+	if err != nil {
+		return err
+	}
+	s := bufio.NewScanner(f)
+	i := 0
+	var list []string
+	for s.Scan() {
+		i++
+		if i == id {
+			continue
+		}
+		list = append(list, s.Text()+"\n")
+	}
+	if err = s.Err(); err != nil {
+		return err
+	}
+	err = impl.writeSortedLines(impl.getFilePath(), list)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (impl *TodoTxtImpl) writeSortedLines(file string, lines []string) (err error) {
+	sort.Strings(lines)
+	f, err := os.Create(file)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	w := bufio.NewWriter(f)
+	defer w.Flush()
+	for _, line := range lines {
+		if "\n" == line {
+			continue
+		}
+		_, err := w.WriteString(line)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
