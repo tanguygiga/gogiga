@@ -6,7 +6,7 @@ type Todo struct {
 	Task string
 }
 
-// NewTodo constructor
-func NewTodo(id int, task string) *Todo {
+// New Todo constructor
+func New(id int, task string) *Todo {
 	return &Todo{ID: id, Task: task}
 }

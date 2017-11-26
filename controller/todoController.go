@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"gogiga/dao"
+	m "gogiga/model"
 )
 
 // TodoController controller
@@ -37,6 +38,33 @@ func (tc TodoController) Get(id int) {
 	}
 	fmt.Printf("--- Ligne %d ---\n", id)
 	fmt.Println(todo.ID, "\t", todo.Task)
+}
+
+// Set Create or Update a Todo and print the list
+func (tc TodoController) Set(id int, task string) {
+	todo, err := tc.dao.Get(id)
+	if err != nil {
+		return
+	}
+	if todo.ID == 0 {
+		// Create
+		t := m.Todo{}
+		t.ID, t.Task = id, task
+		if err = tc.dao.Create(&t); err != nil {
+			return
+		}
+		fmt.Printf("--- Création d'une ligne : %s\n", task)
+	} else {
+		// Update
+		t := m.Todo{}
+		t.ID, t.Task = id, task
+		if err = tc.dao.Update(&t); err != nil {
+			return
+		}
+		fmt.Printf("--- Mise à jour de la ligne %d ---\n", id)
+		fmt.Println(id, "\t"+task)
+	}
+	tc.GetAll()
 }
 
 // Delete a Todo and print the remaining list

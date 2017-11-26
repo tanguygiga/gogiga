@@ -13,7 +13,7 @@ import (
 type TodoTxtImpl struct {
 }
 
-func (impl *TodoTxtImpl) getFilePath() string {
+func getFilePath() string {
 	u, err := user.Current()
 	if err != nil {
 		fmt.Print(err)
@@ -22,37 +22,33 @@ func (impl *TodoTxtImpl) getFilePath() string {
 }
 
 // GetAll return a list of Todo
-func (impl TodoTxtImpl) GetAll() (list []m.Todo, err error) {
-	f, err := os.Open(impl.getFilePath())
+func (impl TodoTxtImpl) GetAll() (listTodo []m.Todo, err error) {
+	f, err := os.Open(getFilePath())
 	if err != nil {
 		return nil, err
 	}
 	s := bufio.NewScanner(f)
-	i := 0
-	for s.Scan() {
+	for i := 1; s.Scan(); i++ {
 		var t m.Todo
-		i++
 		t.ID = i
 		t.Task = s.Text()
-		list = append(list, t)
+		listTodo = append(listTodo, t)
 	}
 	if err = s.Err(); err != nil {
 		return nil, err
 	}
 
-	return list, nil
+	return listTodo, nil
 }
 
 // Get return a Todo
 func (impl TodoTxtImpl) Get(id int) (t m.Todo, err error) {
-	f, err := os.Open(impl.getFilePath())
+	f, err := os.Open(getFilePath())
 	if err != nil {
 		return t, err
 	}
 	s := bufio.NewScanner(f)
-	i := 0
-	for s.Scan() {
-		i++
+	for i := 1; s.Scan(); i++ {
 		if i == id {
 			t.ID = i
 			t.Task = s.Text()
@@ -67,27 +63,60 @@ func (impl TodoTxtImpl) Get(id int) (t m.Todo, err error) {
 
 // Create a Todo
 func (impl TodoTxtImpl) Create(t *m.Todo) error {
-	fmt.Println("Create(t *m.Todo) : Not yet implemented !")
+	f, err := os.Open(getFilePath())
+	if err != nil {
+		return err
+	}
+	s := bufio.NewScanner(f)
+	var list []string
+	for s.Scan() {
+		list = append(list, s.Text()+"\n")
+	}
+	list = append(list, t.Task+"\n")
+	if err = s.Err(); err != nil {
+		return err
+	}
+	err = writeSortedLines(getFilePath(), list)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 // Update a Todo
 func (impl TodoTxtImpl) Update(t *m.Todo) error {
-	fmt.Println("Update(t *m.Todo) : Not yet implemented !")
+	f, err := os.Open(getFilePath())
+	if err != nil {
+		return err
+	}
+	s := bufio.NewScanner(f)
+	var list []string
+	for i := 1; s.Scan(); i++ {
+		task := s.Text()
+		if i == t.ID {
+			task = t.Task
+		}
+		list = append(list, task+"\n")
+	}
+	if err = s.Err(); err != nil {
+		return err
+	}
+	err = writeSortedLines(getFilePath(), list)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 // Delete a Todo
 func (impl TodoTxtImpl) Delete(id int) error {
-	f, err := os.Open(impl.getFilePath())
+	f, err := os.Open(getFilePath())
 	if err != nil {
 		return err
 	}
 	s := bufio.NewScanner(f)
-	i := 0
 	var list []string
-	for s.Scan() {
-		i++
+	for i := 1; s.Scan(); i++ {
 		if i == id {
 			continue
 		}
@@ -96,14 +125,14 @@ func (impl TodoTxtImpl) Delete(id int) error {
 	if err = s.Err(); err != nil {
 		return err
 	}
-	err = impl.writeSortedLines(impl.getFilePath(), list)
+	err = writeSortedLines(getFilePath(), list)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (impl *TodoTxtImpl) writeSortedLines(file string, lines []string) (err error) {
+func writeSortedLines(file string, lines []string) error {
 	sort.Strings(lines)
 	f, err := os.Create(file)
 	if err != nil {

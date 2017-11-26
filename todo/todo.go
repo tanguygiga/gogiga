@@ -1,16 +1,23 @@
 package main
 
 import (
+	"fmt"
 	"gogiga/controller"
-	"net/http"
 )
 
 func main() {
 
 	tc := controller.NewTodoController("txt")
+	fmt.Println("tc.GetAll()")
 	tc.GetAll()
+	fmt.Println("tc.Get(5)")
 	tc.Get(5)
-	//tc.Delete(5)
-
-	http.ListenAndServe(":8088", handler)
+	fmt.Println("tc.Delete(5)")
+	tc.Delete(5)
+	fmt.Println(`tc.Set(5, "tc.Set(5)")`)
+	tc.Set(5, "tc.Set(5)")
+	fmt.Println(`tc.Set(0, "tc.Set(0)")`)
+	tc.Set(0, "tc.Set(0)")
+	fmt.Println(`tc.Set(22, "tc.Set(22)")`)
+	tc.Set(22, "tc.Set(22)")
 }
