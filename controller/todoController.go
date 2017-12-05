@@ -12,9 +12,9 @@ type TodoController struct {
 }
 
 // NewTodoController creating controller with given implementation
-func NewTodoController(impl string) *TodoController {
+func NewTodoController() *TodoController {
 	tc := &TodoController{}
-	tc.dao = dao.TodoDaoFactory(impl)
+	tc.dao = dao.TodoDaoFactory("txt")
 	return tc
 }
 
